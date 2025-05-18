@@ -188,7 +188,6 @@ class MLXModel(BaseTextModel):
                     )
 
             current_tokens = []
-            last_text = ""
 
             max_completion_tokens = (
                 request.max_completion_tokens
@@ -237,19 +236,14 @@ class MLXModel(BaseTextModel):
                             ]
                             should_trim = True
 
-                text = tokenizer.decode(current_tokens)
-                delta_text = text[len(last_text) :]
-
-                if delta_text or should_trim:
-                    yield GenerateResult(
-                        text=delta_text,
-                        token=response.token,
-                        finish_reason=finish_reason,
-                        prompt_tokens=response.prompt_tokens,
-                        generation_tokens=response.generation_tokens,
-                        logprobs=logprobs,
-                    )
-                    last_text = text
+                yield GenerateResult(
+                    text=response.text,
+                    token=response.token,
+                    finish_reason=finish_reason,
+                    prompt_tokens=response.prompt_tokens,
+                    generation_tokens=response.generation_tokens,
+                    logprobs=logprobs,
+                )
 
                 if should_trim:
                     break
